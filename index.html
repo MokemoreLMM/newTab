@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./mgl_icon.png" >
+    <title>Ciallo～(∠・ω< )⌒★</title>
+</head>
+<style>
+    body {
+        background-image: url(./mgl_spl.jpg);
+        background-size: 1918px 993px;
+    }
+
+    .main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-top: 10vh;
+    }
+
+    .times {
+        color: white;
+        text-align: center;
+        font-size: 3vh;
+        margin-bottom: 5vh;
+    }
+
+    .search {
+        padding: 0.5vh 0.52vw;
+        border-radius: 3vh;
+        /* border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0; */
+        /* width: 850px; */
+        background-color: white;
+        display: flex;
+        align-items: center;
+        gap: 0 0.26vw;
+        margin-top: 4vh;
+        background-color: rgba(255, 255, 255, 0.8);
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    }
+
+    .search-input {
+        height: 3vh;
+        width: 39.1vw;
+        border: none;
+        font-size: 1.8vh;
+        background-color: rgba(0, 0, 0, 0);
+    }
+
+    input:focus {
+        outline: none;
+    }
+
+    .search-img {
+        height: 3vh;
+        width: 3vh;
+    }
+    .sele{
+        border: none;
+        background-color: rgba(255, 255, 255, 0);
+        color: rgba(255, 255, 255, 0);
+        position: fixed;
+        width: 3vh;
+        height: 4vh;
+    }
+    option{
+        color: rgba(204, 102, 0, 1);
+        margin: 0 auto;
+        border: none;
+        padding: none;
+        box-shadow: none;
+    }
+</style>
+
+<body>
+    <!-- <p style="position: absolute;left: 40vh;top: 33vh;">1</p> -->
+    <div class="main">
+        <div class="times">
+            <h1 id="timeNow">00:00:00</h1>
+        </div>
+        <div class="search">
+            <img class="search-img" src="./mgl_icon.png" />
+            <select class="sele" id="searchWeb" onchange="changeForce();">
+                <option value="bing" selected>必应</option>
+	            <option value="google">谷歌</option>
+                <option value="baidu">百度</option>
+            </select>
+            <input class="search-input" placeholder="搜索..." id="searchText"
+                onkeydown="if(event.keyCode === 13) {toSearch()} else {searchChange()}" />
+            <div class="search-clear" onclick="clearSearch()"></div>
+            <img class="search-img" src="./search.png" onclick="toSearch()" />
+        </div>
+
+    </div>
+</body>
+
+</html>
+
+<script>
+    const ciallo = 'Ciallo～(∠・ω< )⌒★';
+    const bingUrl = "https://www.bing.com/search?q=";
+    const googleUrl = "https://www.google.com/search?q=";
+    const baiduUrl = "https://www.baidu.com/s?wd=";
+    var searchWeb=null;
+    const changeForce=()=>{
+        var input = document.getElementById('searchText');
+        input.focus();
+        var event={
+            clientX:window.innerHeight*0.5,
+            clientY:window.innerHeight*0.33
+        };
+        flagText(event,"搜索引擎已改为"+document.getElementById("searchWeb").options[document.getElementById("searchWeb").selectedIndex].text,"rgb(255,255,255)",1);
+        document.cookie="searchWeb="+document.getElementById("searchWeb").value+"; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+        searchWeb=document.getElementById("searchWeb").value;
+        input.setSelectionRange(0,0,backward);
+    };
+    const toSearch = () => {
+        var searchText = document.getElementById("searchText").value;
+        searchWeb = searchWeb?searchWeb:document.getElementById("searchWeb").value;
+        var searchUrl;
+        switch(searchWeb){
+            case "bing":searchUrl = bingUrl + searchText;break;
+            case "google":searchUrl = googleUrl + searchText;break;
+            case "baidu":searchUrl = baiduUrl + searchText;break;
+            default:searchUrl = bingUrl + searchText;
+        }
+        window.open(searchUrl, '_self');
+    };
+    const getTimes = () => {
+        var dateNow = new Date();
+        var H = (dateNow.getHours() < 10 ? '0' + dateNow.getHours() : dateNow.getHours());
+        var M = (dateNow.getMinutes() < 10 ? '0' + dateNow.getMinutes() : dateNow.getMinutes());
+        var S = dateNow.getSeconds() < 10 ? '0' + dateNow.getSeconds() : dateNow.getSeconds();
+        var timeDetail = H + ":" + M + ":" + S;
+        document.getElementById("timeNow").innerHTML = timeDetail;
+        setTimeout(() => {
+            getTimes();
+        }, 1000);
+    };
+    const clearSearch = () => {
+        document.getElementById("searchText").value = '';
+        searchChange();
+    };
+    const initSearchWeb=()=>{
+        var tempArr=document.cookie.split(';');
+        for(var i in tempArr){
+            var temp= tempArr[i].split('=');
+            if(temp[0]=="searchWeb"){
+                searchWeb=temp[1];
+                break;
+            }
+        }
+        var select = document.getElementById("searchWeb");  
+        for(var i=0; i<select.options.length; i++){  
+            if(select.options[i].value == searchWeb){  
+                select.options[i].selected = true;  
+                break;  
+            }  
+        } 
+    };
+    const searchChange = () => {
+        setTimeout(() => {
+            var item = document.querySelector('.search-clear');
+            if (document.getElementById("searchText").value) {
+                item.style.cssText = 'background-color: rgba(102, 102, 102, 0.6); color: #f3f3f3; width: 2vh; height: 2vh; border-radius: 1.5vh; line-height: 1.77vh; text-align: center;';
+                item.innerHTML = 'x';
+            }
+            else {
+                item.style.cssText = 'width: 2vh; height: 2vh;';
+                item.innerHTML = '';
+            }
+        }, 100);
+    };
+    const setHandW=()=>{
+        var H=window.innerHeight;
+        var W=window.innerWidth;
+        var item = document.querySelector('body');
+        item.style.cssText='background-image: url(./mgl_spl.jpg); background-size: '+W+'px '+H+'px;'
+    };
+
+
+    window.onclick = function (event) {
+        flagText(event,ciallo);
+    }
+    function flagText(event,text,rgb,flag){
+        var heart = document.createElement("b");
+        heart.onselectstart = new Function('event.returnValue=false'); //防止拖动
+
+        document.body.appendChild(heart).innerHTML = text; //将b元素添加到页面上
+        heart.style.cssText = "position: fixed;left:-100%;";
+
+        var f = 16, // 字体大小
+            x = event.clientX - f / 2, // 横坐标
+            y = event.clientY - f, // 纵坐标
+            c = randomColor(), // 随机颜色
+            a = 1, // 透明度
+            s = 1.2; // 放大缩小
+        c=rgb?rgb:c;
+        flag=flag?flag:0;
+        heart.style.cssText = "font-size:16px;cursor: default;position: fixed;color:" +
+                    c + ";left:" + x + "px;top:" + y + "px;opacity:" + a + ";transform:scale(" +
+                    s + ");";
+        var timer = setInterval(function () { //添加定时器
+            if (a <= 0) {
+                document.body.removeChild(heart);
+                clearInterval(timer);
+            } else {
+                if(flag==0){
+                    heart.style.cssText = "font-size:16px;cursor: default;position: fixed;color:" +
+                    c + ";left:" + x + "px;top:" + y + "px;opacity:" + a + ";transform:scale(" +
+                    s + ");";
+                }
+
+                y--;
+                a -= 0.016;
+                s += 0.002;
+            }
+        }, 15)
+    }
+
+    function randomColor() {
+        return "rgb(" + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + "," + (~~(Math
+            .random() * 255)) + ")";
+    }
+
+    //init
+    window.addEventListener('resize',setHandW);//监听页面尺寸变化
+    setHandW();
+    initSearchWeb();
+    searchChange();
+    getTimes();
+</script>
